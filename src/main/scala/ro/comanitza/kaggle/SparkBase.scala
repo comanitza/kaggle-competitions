@@ -3,7 +3,9 @@ package ro.comanitza.kaggle
 import java.lang.management.ManagementFactory
 
 import org.apache.spark.SparkConf
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{DataFrame, Encoder, SparkSession}
+
+import scala.collection.mutable
 
 /**
  *
@@ -38,5 +40,32 @@ abstract class SparkBase {
    */
   protected def prepareEnv(): Unit = {
     System.setProperty("hadoop.home.dir", "D:\\stuff\\hadoopHome\\winutils-master\\winutils-master\\hadoop-3.0.0")
+  }
+
+  def allFeaturesCombinations(features: Array[String]): mutable.Set[Array[String]] = {
+
+    val result = new mutable.HashSet[Array[String]]()
+
+    for (i <- features.indices) {
+
+      for (j <- i + 1 until features.length) {
+
+        result.add(features.slice(i, j))
+      }
+    }
+
+    result
+  }
+
+  protected def printRowsCountByValue(targetColumn: String, df: DataFrame)(implicit outputEncoder: Encoder[String]): Unit = {
+
+    val targets = df.select(targetColumn).distinct().map(r => r.getString(0)).collect()
+
+    println(s"### $targetColumn ### ### ###")
+    for (t <- targets) {
+
+      println(t + " -> " + df.where(s"$targetColumn='$t'").count() + " count")
+
+    }
   }
 }
