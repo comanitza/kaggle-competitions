@@ -40,6 +40,8 @@ abstract class SparkBase {
    */
   protected def prepareEnv(): Unit = {
     System.setProperty("hadoop.home.dir", "D:\\stuff\\hadoopHome\\winutils-master\\winutils-master\\hadoop-3.0.0")
+    System.setProperty("spark.local.dir", "D:\\temp\\hadoop")
+    System.setProperty("java.io.tmpdir", "D:\\temp")
   }
 
   def allFeaturesCombinations(features: Array[String]): mutable.Set[Array[String]] = {
